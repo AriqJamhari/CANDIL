@@ -246,3 +246,72 @@ body {
 .section-padding {
   padding: 60px 0;
 }
+
+/* Responsive Grid Layouts */
+.detail-jasa-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.pesanan-detail-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.pesanan-row-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.admin-panel-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 30px;
+  align-items: start;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 992px) {
+  .detail-jasa-layout,
+  .pesanan-detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-panel-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 40px 0;
+  }
+  
+  .pesanan-row-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+    justify-items: center;
+  }
+  
+  .pesanan-row-card > div {
+    align-items: center !important;
+    text-align: center !important;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.6rem !important;
+  }
+}

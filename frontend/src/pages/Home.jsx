@@ -337,8 +337,11 @@ const Home = () => {
         @media (max-width: 768px) {
           .hero-container {
             flex-direction: column-reverse !important;
-            padding: 32px 20px !important;
+            padding: 60px 20px 32px 20px !important;
             text-align: center;
+          }
+          .hero-container h1 {
+            font-size: 2.2rem !important;
           }
           .hero-left {
             width: 100% !important;
@@ -346,6 +349,7 @@ const Home = () => {
           }
           .hero-left p {
             margin: 0 auto !important;
+            font-size: 0.95rem !important;
           }
           .hero-left div {
             justify-content: center;

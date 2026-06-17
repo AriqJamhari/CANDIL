@@ -91,7 +91,7 @@ const PanelAdmin = () => {
       </div>
 
       {/* Grid: Broadcast panel & Tabular data */}
-      <div style={{ display: 'grid', gridTemplateColumns: '320px minmax(0, 1fr)', gap: '30px', alignItems: 'start' }} className="admin-grid-layout">
+      <div className="admin-panel-layout">
         
         {/* Broadcast Form Panel */}
         <div className="glass-panel" style={{ padding: '24px' }}>

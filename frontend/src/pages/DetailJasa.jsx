@@ -142,12 +142,7 @@ const DetailJasa = () => {
       </button>
 
       {/* Main Grid: Details vs Pricing card */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 2fr) 1fr',
-        gap: '30px',
-        alignItems: 'start'
-      }} className="detail-jasa-layout">
+      <div className="detail-jasa-layout">
         {/* Left Column: Info & Reviews */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
           {/* Main Info */}

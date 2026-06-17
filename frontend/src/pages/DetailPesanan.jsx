@@ -133,12 +133,7 @@ const DetailPesanan = () => {
       </button>
 
       {/* Main Grid: Status and Details vs Chat */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1.2fr 1fr',
-        gap: '30px',
-        alignItems: 'start'
-      }} className="pesanan-detail-layout">
+      <div className="pesanan-detail-layout">
         
         {/* Left Column: Order Card & Progress Tracker & Ulasan Form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

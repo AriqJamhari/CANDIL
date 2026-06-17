@@ -103,14 +103,9 @@ const DaftarPesanan = () => {
             return (
               <div 
                 key={pesanan.id} 
-                className="glass-panel" 
+                className="glass-panel pesanan-row-card" 
                 style={{
-                  padding: '20px',
-                  display: 'grid',
-                  gridTemplateColumns: 'auto 1fr auto',
-                  alignItems: 'center',
-                  gap: '20px',
-                  position: 'relative'
+                  padding: '20px'
                 }}
               >
                 {/* Jasa Thumbnail */}
