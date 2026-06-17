@@ -88,21 +88,27 @@ const parseCookies = (cookieString) => {
 
 // Socket.io Auth Middleware
 io.use((socket, next) => {
+  let token = null;
   const cookieHeader = socket.handshake.headers.cookie;
   if (cookieHeader) {
     const cookies = parseCookies(cookieHeader);
-    const token = cookies.token;
-    if (token) {
-      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-          console.log('Socket JWT verification failed');
-          return next(); // Proceed without auth
-        }
-        socket.user = decoded;
-        next();
-      });
-      return;
-    }
+    token = cookies.token;
+  }
+  
+  if (!token && socket.handshake.auth && socket.handshake.auth.token) {
+    token = socket.handshake.auth.token;
+  }
+
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        console.log('Socket JWT verification failed');
+        return next(); // Proceed without auth
+      }
+      socket.user = decoded;
+      next();
+    });
+    return;
   }
   next();
 });

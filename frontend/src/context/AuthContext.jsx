@@ -31,9 +31,13 @@ export const AuthProvider = ({ children }) => {
       const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const socketURL = apiURL.replace(/\/api$/, '');
       
+      const token = localStorage.getItem('token');
       const newSocket = io(socketURL, {
         withCredentials: true,
-        transports: ['websocket', 'polling']
+        transports: ['websocket', 'polling'],
+        auth: {
+          token
+        }
       });
 
       setSocket(newSocket);
@@ -67,12 +71,20 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const res = await axiosInstance.post('/auth/login', { email, password });
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
+    }
     setUser(res.data.user);
     return res.data;
   };
 
   const logout = async () => {
-    await axiosInstance.post('/auth/logout');
+    try {
+      await axiosInstance.post('/auth/logout');
+    } catch (err) {
+      console.error('Logout request failed:', err);
+    }
+    localStorage.removeItem('token');
     setUser(null);
   };
 
