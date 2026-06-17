@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
+import axiosInstance, { getUploadUrl } from '../api/axiosInstance';
 import KartuJasa from '../components/KartuJasa';
 import { ArrowLeft, User, MessageSquare, Mail, Award, CheckCircle } from 'lucide-react';
 
@@ -81,7 +81,7 @@ const ProfilFreelancer = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
           {profile?.foto ? (
             <img 
-              src={`http://localhost:5000/uploads/${profile.foto}`} 
+              src={getUploadUrl(profile.foto)} 
               alt={profile.nama} 
               style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--accent-purple)', boxShadow: 'var(--shadow-neon)' }}
             />

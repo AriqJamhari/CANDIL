@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../api/axiosInstance';
+import axiosInstance, { getUploadUrl } from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Edit, Trash2, Tag, Eye, EyeOff, X, Upload } from 'lucide-react';
 
@@ -200,7 +200,7 @@ const DashboardFreelancer = () => {
                   <td style={{ padding: '12px 16px' }}>
                     {jasa.foto ? (
                       <img 
-                        src={`http://localhost:5000/uploads/${jasa.foto}`} 
+                        src={getUploadUrl(jasa.foto)} 
                         alt={jasa.judul}
                         style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-glass)' }}
                       />

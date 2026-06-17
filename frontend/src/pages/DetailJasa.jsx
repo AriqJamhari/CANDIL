@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
+import axiosInstance, { getUploadUrl } from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
 import BintangRating from '../components/BintangRating';
 import { User, MessageSquare, ShoppingCart, ArrowLeft, Tag, Calendar } from 'lucide-react';
@@ -195,7 +195,7 @@ const DetailJasa = () => {
             }}>
               {jasa.foto ? (
                 <img 
-                  src={`http://localhost:5000/uploads/${jasa.foto}`} 
+                  src={getUploadUrl(jasa.foto)} 
                   alt={jasa.judul} 
                   style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '400px' }}
                 />
@@ -227,7 +227,7 @@ const DetailJasa = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               {jasa.freelancer_foto ? (
                 <img 
-                  src={`http://localhost:5000/uploads/${jasa.freelancer_foto}`} 
+                  src={getUploadUrl(jasa.freelancer_foto)} 
                   alt={jasa.freelancer_nama} 
                   style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent-purple)' }}
                 />
@@ -282,7 +282,7 @@ const DetailJasa = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {ulasan.client_foto ? (
                           <img 
-                            src={`http://localhost:5000/uploads/${ulasan.client_foto}`} 
+                            src={getUploadUrl(ulasan.client_foto)} 
                             alt={ulasan.client_nama} 
                             style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }}
                           />

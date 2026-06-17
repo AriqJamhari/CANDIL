@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NotifikasiDropdown from './NotifikasiDropdown';
 import { LogOut, ShoppingBag, LayoutDashboard, Shield } from 'lucide-react';
+import { getUploadUrl } from '../api/axiosInstance';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -155,7 +156,7 @@ const Navbar = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '8px' }}>
                   {user.foto ? (
                     <img 
-                      src={`http://localhost:5000/uploads/${user.foto}`} 
+                      src={getUploadUrl(user.foto)} 
                       alt={user.nama} 
                       style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--accent-purple)' }} 
                     />

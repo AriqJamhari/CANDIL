@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
+import axiosInstance, { getUploadUrl } from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
 import { FileText, Calendar, ShoppingBag, ArrowRight } from 'lucide-react';
 
@@ -117,7 +117,7 @@ const DaftarPesanan = () => {
                 <div style={{ width: '80px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-glass)', backgroundColor: 'var(--bg-secondary)' }}>
                   {pesanan.jasa_foto ? (
                     <img 
-                      src={`http://localhost:5000/uploads/${pesanan.jasa_foto}`} 
+                      src={getUploadUrl(pesanan.jasa_foto)} 
                       alt={pesanan.jasa_judul} 
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />

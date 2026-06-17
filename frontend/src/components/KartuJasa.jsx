@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import BintangRating from './BintangRating';
 import { User, Tag } from 'lucide-react';
+import { getUploadUrl } from '../api/axiosInstance';
 
 const KartuJasa = ({ jasa }) => {
   const formatPrice = (price) => {
@@ -27,7 +28,7 @@ const KartuJasa = ({ jasa }) => {
       <div style={{ position: 'relative', height: '180px', width: '100%', overflow: 'hidden' }}>
         {jasa.foto ? (
           <img 
-            src={`http://localhost:5000/uploads/${jasa.foto}`} 
+            src={getUploadUrl(jasa.foto)} 
             alt={jasa.judul}
             style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'var(--transition-smooth)' }}
             className="jasa-card-img"
@@ -90,7 +91,7 @@ const KartuJasa = ({ jasa }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid var(--border-glass)', paddingTop: '10px' }}>
           {jasa.freelancer_foto ? (
             <img 
-              src={`http://localhost:5000/uploads/${jasa.freelancer_foto}`} 
+              src={getUploadUrl(jasa.freelancer_foto)} 
               alt={jasa.freelancer_nama}
               style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
             />
