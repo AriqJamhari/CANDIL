@@ -65,11 +65,13 @@ const login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    const isProduction = process.env.NODE_ENV === 'production' || (process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('localhost'));
+
     // Set cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false, // false for local HTTP development
-      sameSite: 'lax',
+      secure: isProduction, // true for production HTTPS cross-site
+      sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-site cookies
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
@@ -90,7 +92,12 @@ const login = async (req, res) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie('token');
+  const isProduction = process.env.NODE_ENV === 'production' || (process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('localhost'));
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax'
+  });
   res.status(200).json({ message: 'Logout berhasil' });
 };
 

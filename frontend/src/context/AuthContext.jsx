@@ -28,7 +28,10 @@ export const AuthProvider = ({ children }) => {
   // Set up socket connection based on user authentication
   useEffect(() => {
     if (user) {
-      const newSocket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+      const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const socketURL = apiURL.replace(/\/api$/, '');
+      
+      const newSocket = io(socketURL, {
         withCredentials: true,
         transports: ['websocket', 'polling']
       });
