@@ -45,7 +45,6 @@ const Navbar = () => {
             style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1.5px solid var(--accent-purple)', objectFit: 'cover' }} 
           />
           <span className="text-gradient logo-text" style={{
-            fontSize: '1.4rem',
             fontWeight: 800,
             letterSpacing: '0.5px',
             textTransform: 'uppercase'
@@ -517,7 +516,15 @@ const Navbar = () => {
           animation: fadeIn 0.2s ease forwards;
         }
         
-        @media (max-width: 768px) {
+        .logo-text {
+          font-size: 1.4rem;
+        }
+        @media (max-width: 1200px) {
+          .logo-text {
+            font-size: 1.15rem;
+          }
+        }
+        @media (max-width: 992px) {
           .nav-desktop, .nav-divider, .auth-desktop {
             display: none !important;
           }
@@ -528,7 +535,7 @@ const Navbar = () => {
             display: block !important;
           }
           .logo-text {
-            font-size: 1.15rem !important;
+            font-size: 1.1rem !important;
           }
         }
       `}</style>

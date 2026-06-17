@@ -85,7 +85,8 @@ function MaskotHero() {
         justifyContent: 'center', 
         alignItems: 'center',
         perspective: '1000px',
-        width: '320px',
+        width: '100%',
+        maxWidth: '320px',
         height: '320px'
       }}
     >
@@ -145,8 +146,10 @@ function MaskotHero() {
           src="/logo.png"
           alt="Candil Mascot"
           style={{
-            width: '260px',
-            height: '260px',
+            width: '100%',
+            maxWidth: '260px',
+            height: 'auto',
+            aspectRatio: '1/1',
             objectFit: 'contain',
             transform: `rotateX(${coords.y}deg) rotateY(${coords.x}deg) translate(${coords.tx}px, ${coords.ty}px)`,
             transition: 'transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)',
