@@ -10,9 +10,26 @@ require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
+// Dynamic CORS configuration to allow localhost and any vercel.app subdomain
+const checkOrigin = (origin, callback) => {
+  // Allow requests with no origin (like mobile apps or curl)
+  if (!origin) return callback(null, true);
+  
+  const allowedOrigins = ['http://localhost:5173', 'http://localhost:5000'];
+  const isVercel = origin.endsWith('.vercel.app');
+  const isCustomFrontend = process.env.FRONTEND_URL && origin.startsWith(process.env.FRONTEND_URL.replace(/\/$/, ''));
+  
+  if (allowedOrigins.indexOf(origin) !== -1 || isVercel || isCustomFrontend) {
+    callback(null, true);
+  } else {
+    callback(new Error('Blocked by CORS policy'));
+  }
+};
+
 const io = socketIo(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: checkOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true
   }
@@ -20,7 +37,7 @@ const io = socketIo(server, {
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: checkOrigin,
   credentials: true
 }));
 app.use(express.json());
