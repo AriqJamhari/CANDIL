@@ -61,6 +61,8 @@ const ulasanRoutes = require('./routes/ulasanRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const notifikasiRoutes = require('./routes/notifikasiRoutes');
+const premiumRoutes = require('./routes/premiumRoutes');
+const portofolioRoutes = require('./routes/portofolioRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/jasa', jasaRoutes);
@@ -69,6 +71,8 @@ app.use('/api/ulasan', ulasanRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifikasi', notifikasiRoutes);
+app.use('/api/premium', premiumRoutes);
+app.use('/api/portofolio', portofolioRoutes);
 
 app.get('/', (req, res) => {
   res.send('Freelance Service Platform API is running...');

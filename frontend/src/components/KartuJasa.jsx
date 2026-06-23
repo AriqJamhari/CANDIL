@@ -22,10 +22,29 @@ const KartuJasa = ({ jasa }) => {
       flexDirection: 'column',
       height: '100%',
       overflow: 'hidden',
-      position: 'relative'
+      position: 'relative',
+      borderColor: jasa.is_premium_freelancer ? '#ffd700' : 'var(--border-glass)',
+      boxShadow: jasa.is_premium_freelancer ? '0 0 15px rgba(255, 215, 0, 0.35)' : 'none'
     }}>
       {/* Jasa Foto / Thumbnail */}
       <div style={{ position: 'relative', height: '180px', width: '100%', overflow: 'hidden' }}>
+        {jasa.is_premium_freelancer && (
+          <span style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            background: 'linear-gradient(135deg, #ffd700 0%, #b8860b 100%)',
+            color: '#07050d',
+            padding: '4px 10px',
+            borderRadius: '20px',
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+            zIndex: 10
+          }}>
+            ⭐ Premium
+          </span>
+        )}
         {jasa.foto ? (
           <img 
             src={getUploadUrl(jasa.foto)} 

@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     role ENUM('client', 'freelancer', 'admin') NOT NULL,
     foto VARCHAR(255) DEFAULT NULL,
+    is_premium BOOLEAN DEFAULT FALSE,
+    premium_until DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -71,4 +73,30 @@ CREATE TABLE IF NOT EXISTS notifikasi (
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- 7. Table premium_requests
+CREATE TABLE IF NOT EXISTS premium_requests (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  freelancer_id INT NOT NULL,
+  status        ENUM('pending','approved','rejected') DEFAULT 'pending',
+  bukti_bayar   VARCHAR(255) DEFAULT NULL,
+  paket         ENUM('monthly','yearly') NOT NULL,
+  harga         DECIMAL(12,2) NOT NULL,
+  catatan_admin TEXT DEFAULT NULL,
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (freelancer_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- 8. Table portofolio
+CREATE TABLE IF NOT EXISTS portofolio (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  freelancer_id INT NOT NULL,
+  judul         VARCHAR(200) NOT NULL,
+  deskripsi     TEXT DEFAULT NULL,
+  link_url      VARCHAR(500) DEFAULT NULL,
+  gambar        VARCHAR(255) DEFAULT NULL,
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (freelancer_id) REFERENCES users(id) ON DELETE CASCADE
 );

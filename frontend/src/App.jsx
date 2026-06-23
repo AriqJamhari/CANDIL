@@ -14,6 +14,7 @@ import DashboardFreelancer from './pages/DashboardFreelancer';
 import DaftarPesanan from './pages/DaftarPesanan';
 import DetailPesanan from './pages/DetailPesanan';
 import PanelAdmin from './pages/PanelAdmin';
+import PremiumPage from './pages/PremiumPage';
 
 function App() {
   return (
@@ -50,6 +51,12 @@ function App() {
               <Route path="/dashboard" element={
                 <PrivateRoute allowedRoles={['freelancer']}>
                   <DashboardFreelancer />
+                </PrivateRoute>
+              } />
+
+              <Route path="/premium" element={
+                <PrivateRoute allowedRoles={['freelancer']}>
+                  <PremiumPage />
                 </PrivateRoute>
               } />
 

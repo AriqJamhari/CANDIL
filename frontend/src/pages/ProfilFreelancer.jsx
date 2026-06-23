@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axiosInstance, { getUploadUrl } from '../api/axiosInstance';
 import KartuJasa from '../components/KartuJasa';
-import { ArrowLeft, User, MessageSquare, Mail, Award, CheckCircle } from 'lucide-react';
+import { ArrowLeft, User, MessageSquare, Mail, Award, CheckCircle, Briefcase, ExternalLink } from 'lucide-react';
 
 const ProfilFreelancer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [jasas, setJasas] = useState([]);
+  const [portofolios, setPortofolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -19,6 +20,10 @@ const ProfilFreelancer = () => {
         // Query services by this freelancer
         const res = await axiosInstance.get(`/jasa?freelancer_id=${id}`);
         setJasas(res.data);
+
+        // Query portfolios of this freelancer
+        const portoRes = await axiosInstance.get(`/portofolio/${id}`);
+        setPortofolios(portoRes.data.portofolio || []);
       } catch (err) {
         console.error(err);
         setError('Gagal memuat profil freelancer.');
@@ -174,6 +179,53 @@ const ProfilFreelancer = () => {
           </div>
         )}
       </div>
+
+      {/* Portofolio Section */}
+      {portofolios.length > 0 && (
+        <div style={{ marginTop: '40px' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }} className="text-gradient">
+            <Briefcase size={22} /> Portofolio Kerja
+          </h3>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+            {portofolios.map((porto) => (
+              <div key={porto.id} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', height: '100%', background: 'rgba(255,255,255,0.01)', padding: 0 }}>
+                {porto.gambar ? (
+                  <div style={{ height: '160px', width: '100%', overflow: 'hidden', borderBottom: '1px solid var(--border-glass)' }}>
+                    <img 
+                      src={getUploadUrl(porto.gambar)} 
+                      alt={porto.judul} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                ) : (
+                  <div style={{ height: '160px', width: '100%', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-glass)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                    <Briefcase size={32} />
+                  </div>
+                )}
+                <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1, gap: '8px' }}>
+                  <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', margin: 0 }}>{porto.judul}</h4>
+                  {porto.deskripsi && (
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.4' }}>
+                      {porto.deskripsi}
+                    </p>
+                  )}
+                  {porto.link_url && (
+                    <a 
+                      href={porto.link_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      style={{ fontSize: '0.8rem', color: 'var(--accent-teal)', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', fontWeight: 500, marginTop: 'auto' }}
+                    >
+                      Lihat Project <ExternalLink size={12} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       
       <style>{`
         @media (max-width: 600px) {

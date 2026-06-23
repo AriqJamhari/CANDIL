@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../api/axiosInstance';
-import { Users, Tag, ShoppingBag, Send, ShieldAlert, FileText } from 'lucide-react';
+import axiosInstance, { getUploadUrl } from '../api/axiosInstance';
+import { Users, Tag, ShoppingBag, Send, ShieldAlert, FileText, Award, X, Eye } from 'lucide-react';
 
 const PanelAdmin = () => {
   const [activeTab, setActiveTab] = useState('users');
   const [usersList, setUsersList] = useState([]);
   const [jasasList, setJasasList] = useState([]);
   const [pesanansList, setPesanansList] = useState([]);
+  const [premiumRequestsList, setPremiumRequestsList] = useState([]);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -16,6 +17,13 @@ const PanelAdmin = () => {
   const [bcLoading, setBcLoading] = useState(false);
   const [bcSuccess, setBcSuccess] = useState('');
   const [bcError, setBcError] = useState('');
+
+  // Premium actions state
+  const [selectedRequest, setSelectedRequest] = useState(null); // Proof detail modal
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectingRequestId, setRejectingRequestId] = useState(null);
+  const [verifyLoading, setVerifyLoading] = useState(false);
 
   const fetchTabData = async (tab) => {
     setLoading(true);
@@ -30,6 +38,9 @@ const PanelAdmin = () => {
       } else if (tab === 'pesanan') {
         const res = await axiosInstance.get('/admin/pesanan');
         setPesanansList(res.data);
+      } else if (tab === 'premium') {
+        const res = await axiosInstance.get('/premium/requests');
+        setPremiumRequestsList(res.data.requests || []);
       }
     } catch (err) {
       console.error(err);
@@ -42,6 +53,50 @@ const PanelAdmin = () => {
   useEffect(() => {
     fetchTabData(activeTab);
   }, [activeTab]);
+
+  const handleApprovePremium = async (id) => {
+    if (!window.confirm('Apakah Anda yakin ingin menyetujui pengajuan premium ini?')) return;
+    setVerifyLoading(true);
+    try {
+      await axiosInstance.patch(`/premium/requests/${id}/verify`, { action: 'approve' });
+      alert('Pengajuan premium disetujui!');
+      fetchTabData('premium');
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Gagal memverifikasi pengajuan premium.');
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+  const handleRejectClick = (id) => {
+    setRejectingRequestId(id);
+    setRejectReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleRejectSubmit = async (e) => {
+    e.preventDefault();
+    if (!rejectReason.trim()) {
+      alert('Harap masukkan alasan penolakan.');
+      return;
+    }
+    setVerifyLoading(true);
+    try {
+      await axiosInstance.patch(`/premium/requests/${rejectingRequestId}/verify`, {
+        action: 'reject',
+        catatan_admin: rejectReason
+      });
+      alert('Pengajuan premium ditolak.');
+      setShowRejectModal(false);
+      fetchTabData('premium');
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Gagal memproses penolakan.');
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
 
   const handleBroadcastSubmit = async (e) => {
     e.preventDefault();
@@ -160,6 +215,14 @@ const PanelAdmin = () => {
               style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '10px 16px' }}
             >
               <ShoppingBag size={16} /> Pesanan ({activeTab === 'pesanan' ? pesanansList.length : '...'})
+            </button>
+
+            <button 
+              onClick={() => setActiveTab('premium')}
+              className={`btn ${activeTab === 'premium' ? 'btn-teal' : 'btn-outline'}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', padding: '10px 16px' }}
+            >
+              <Award size={16} /> Verifikasi Premium ({activeTab === 'premium' ? premiumRequestsList.length : '...'})
             </button>
           </div>
 
@@ -285,11 +348,182 @@ const PanelAdmin = () => {
                   </tbody>
                 </table>
               )}
+
+              {/* 4. Premium Requests Table */}
+              {activeTab === 'premium' && (
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border-glass)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                      <th style={{ padding: '10px' }}>ID</th>
+                      <th style={{ padding: '10px' }}>Freelancer</th>
+                      <th style={{ padding: '10px' }}>Paket</th>
+                      <th style={{ padding: '10px' }}>Harga</th>
+                      <th style={{ padding: '10px' }}>Bukti Bayar</th>
+                      <th style={{ padding: '10px' }}>Status</th>
+                      <th style={{ padding: '10px', textAlign: 'right' }}>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {premiumRequestsList.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+                          Tidak ada pengajuan premium.
+                        </td>
+                      </tr>
+                    ) : (
+                      premiumRequestsList.map(pr => (
+                        <tr key={pr.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', fontSize: '0.85rem' }} className="admin-row">
+                          <td style={{ padding: '10px', color: 'var(--text-muted)' }}>#{pr.id}</td>
+                          <td style={{ padding: '10px', fontWeight: 600 }}>
+                            <div>{pr.freelancer_nama}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{pr.freelancer_email}</div>
+                          </td>
+                          <td style={{ padding: '10px', textTransform: 'capitalize' }}>
+                            {pr.paket === 'monthly' ? 'Bulanan' : 'Tahunan'}
+                          </td>
+                          <td style={{ padding: '10px', color: 'var(--accent-teal)', fontWeight: 'bold' }}>{formatPrice(pr.harga)}</td>
+                          <td style={{ padding: '10px' }}>
+                            {pr.bukti_bayar ? (
+                              <button 
+                                onClick={() => setSelectedRequest(pr)}
+                                className="btn btn-outline"
+                                style={{ padding: '4px 8px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <Eye size={12} /> Lihat Bukti
+                              </button>
+                            ) : (
+                              <span style={{ color: 'var(--text-muted)' }}>Tidak ada</span>
+                            )}
+                          </td>
+                          <td style={{ padding: '10px' }}>
+                            <span style={{
+                              padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', textTransform: 'uppercase',
+                              background: pr.status === 'approved' ? 'rgba(20, 184, 166, 0.15)' : pr.status === 'rejected' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                              color: pr.status === 'approved' ? '#5eead4' : pr.status === 'rejected' ? '#fca5a5' : '#fcd34d'
+                            }}>
+                              {pr.status}
+                            </span>
+                          </td>
+                          <td style={{ padding: '10px', textAlign: 'right' }}>
+                            {pr.status === 'pending' ? (
+                              <div style={{ display: 'inline-flex', gap: '8px' }}>
+                                <button 
+                                  onClick={() => handleApprovePremium(pr.id)}
+                                  className="btn btn-teal"
+                                  style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+                                  disabled={verifyLoading}
+                                >
+                                  Approve
+                                </button>
+                                <button 
+                                  onClick={() => handleRejectClick(pr.id)}
+                                  className="btn btn-outline"
+                                  style={{ padding: '4px 8px', fontSize: '0.75rem', borderColor: 'rgba(239, 68, 68, 0.4)', color: '#fca5a5' }}
+                                  disabled={verifyLoading}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            ) : (
+                              <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                                {pr.status === 'approved' ? 'Disetujui' : 'Ditolak'}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
         </div>
 
       </div>
+
+      {/* MODAL 1: Detail Bukti Pembayaran */}
+      {selectedRequest && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(10, 7, 27, 0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          zIndex: 1100, padding: '20px'
+        }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', padding: '24px', position: 'relative' }}>
+            <button 
+              onClick={() => setSelectedRequest(null)}
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+            >
+              <X size={20} />
+            </button>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '16px' }}>Bukti Pembayaran</h3>
+            <div style={{ width: '100%', maxHeight: '400px', overflowY: 'auto', borderRadius: '8px', border: '1px solid var(--border-glass)', background: '#000', display: 'flex', justifyContent: 'center' }}>
+              <img 
+                src={getUploadUrl(selectedRequest.bukti_bayar)} 
+                alt="Bukti Bayar" 
+                style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+              />
+            </div>
+            <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+              <div><strong>Freelancer:</strong> {selectedRequest.freelancer_nama}</div>
+              <div><strong>Paket:</strong> {selectedRequest.paket === 'monthly' ? 'Bulanan' : 'Tahunan'}</div>
+              <div><strong>Harga:</strong> {formatPrice(selectedRequest.harga)}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: Alasan Penolakan (Reject) */}
+      {showRejectModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(10, 7, 27, 0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          zIndex: 1100, padding: '20px'
+        }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '450px', padding: '24px', position: 'relative' }}>
+            <button 
+              onClick={() => setShowRejectModal(false)}
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+            >
+              <X size={20} />
+            </button>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '16px' }}>Tolak Pengajuan Premium</h3>
+            <form onSubmit={handleRejectSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Alasan Penolakan *</label>
+                <textarea 
+                  className="form-control"
+                  placeholder="Tulis alasan penolakan agar freelancer mengetahuinya..."
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  rows="4"
+                  required
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setShowRejectModal(false)} 
+                  className="btn btn-outline"
+                  style={{ flex: 1 }}
+                >
+                  Batal
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary"
+                  style={{ flex: 1, backgroundColor: 'rgba(239, 68, 68, 0.8)', borderColor: 'rgb(239, 68, 68)' }}
+                  disabled={verifyLoading}
+                >
+                  Tolak Pengajuan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       
       <style>{`
         .admin-row:hover {

@@ -106,6 +106,20 @@ const Navbar = () => {
                       <LayoutDashboard size={18} /> Dashboard FL
                     </Link>
                     <Link 
+                      to="/premium" 
+                      style={{ 
+                        color: isActive('/premium') ? 'var(--text-primary)' : 'var(--text-secondary)', 
+                        textDecoration: 'none', 
+                        fontWeight: 500, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '6px' 
+                      }} 
+                      className={`nav-link ${isActive('/premium') ? 'active' : ''}`}
+                    >
+                      <span>⭐ Premium</span>
+                    </Link>
+                    <Link 
                       to="/pesanan" 
                       style={{ 
                         color: isActive('/pesanan') ? 'var(--text-primary)' : 'var(--text-secondary)', 
@@ -325,6 +339,22 @@ const Navbar = () => {
                       }}
                     >
                       <LayoutDashboard size={18} /> Dashboard FL
+                    </Link>
+                    <Link 
+                      to="/premium" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`nav-link ${isActive('/premium') ? 'active' : ''}`}
+                      style={{ 
+                        color: isActive('/premium') ? 'var(--text-primary)' : 'var(--text-secondary)', 
+                        textDecoration: 'none', 
+                        fontWeight: 500,
+                        fontSize: '1.05rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      <span>⭐ Premium</span>
                     </Link>
                     <Link 
                       to="/pesanan" 

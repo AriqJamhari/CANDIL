@@ -36,7 +36,7 @@ const getAllJasa = async (req, res) => {
   const { kategori, harga_min, harga_max, q, freelancer_id } = req.query;
 
   let sql = `
-    SELECT j.*, u.nama AS freelancer_nama, u.foto AS freelancer_foto,
+    SELECT j.*, u.nama AS freelancer_nama, u.foto AS freelancer_foto, u.is_premium AS is_premium_freelancer,
     COALESCE(AVG(ul.rating), 0) AS rating_rata, COUNT(ul.id) AS ulasan_count
     FROM jasa j
     JOIN users u ON j.freelancer_id = u.id
@@ -74,7 +74,7 @@ const getAllJasa = async (req, res) => {
     params.push(`%${q}%`, `%${q}%`);
   }
 
-  sql += ' GROUP BY j.id ORDER BY j.created_at DESC';
+  sql += ' GROUP BY j.id ORDER BY u.is_premium DESC, j.created_at DESC';
 
   try {
     const [jasas] = await db.query(sql, params);
@@ -90,7 +90,7 @@ const getJasaById = async (req, res) => {
 
   try {
     const [jasas] = await db.query(`
-      SELECT j.*, u.nama AS freelancer_nama, u.email AS freelancer_email, u.foto AS freelancer_foto,
+      SELECT j.*, u.nama AS freelancer_nama, u.email AS freelancer_email, u.foto AS freelancer_foto, u.is_premium AS is_premium_freelancer,
       COALESCE(AVG(ul.rating), 0) AS rating_rata, COUNT(ul.id) AS ulasan_count
       FROM jasa j
       JOIN users u ON j.freelancer_id = u.id

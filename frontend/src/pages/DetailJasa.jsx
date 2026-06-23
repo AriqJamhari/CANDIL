@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axiosInstance, { getUploadUrl } from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
 import BintangRating from '../components/BintangRating';
-import { User, MessageSquare, ShoppingCart, ArrowLeft, Tag, Calendar } from 'lucide-react';
+import { User, MessageSquare, ShoppingCart, ArrowLeft, Tag, Calendar, Briefcase, ExternalLink } from 'lucide-react';
 
 const DetailJasa = () => {
   const { id } = useParams();
@@ -12,6 +12,7 @@ const DetailJasa = () => {
 
   const [jasa, setJasa] = useState(null);
   const [ulasans, setUlasans] = useState([]);
+  const [portofolios, setPortofolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -29,6 +30,10 @@ const DetailJasa = () => {
         // Fetch Jasa detail
         const jasaRes = await axiosInstance.get(`/jasa/${id}`);
         setJasa(jasaRes.data);
+
+        // Fetch portfolios of this freelancer
+        const portoRes = await axiosInstance.get(`/portofolio/${jasaRes.data.freelancer_id}`);
+        setPortofolios(portoRes.data.portofolio || []);
 
         // Fetch reviews
         const ulasanRes = await axiosInstance.get(`/ulasan/jasa/${id}`);
@@ -252,6 +257,53 @@ const DetailJasa = () => {
               </div>
             </div>
           </div>
+
+          {/* Portfolios list */}
+          {portofolios.length > 0 && (
+            <div className="glass-panel" style={{ padding: '24px' }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }} className="text-gradient">
+                <Briefcase size={20} /> Portofolio Freelancer
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
+                {portofolios.map((porto) => (
+                  <div key={porto.id} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'rgba(255,255,255,0.01)', padding: 0 }}>
+                    {porto.gambar ? (
+                      <div style={{ height: '120px', width: '100%', overflow: 'hidden', borderBottom: '1px solid var(--border-glass)' }}>
+                        <img 
+                          src={getUploadUrl(porto.gambar)} 
+                          alt={porto.judul} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ height: '120px', width: '100%', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-glass)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                        <Briefcase size={24} />
+                      </div>
+                    )}
+                    <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', flex: 1, gap: '6px' }}>
+                      <h4 style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)', margin: 0 }}>{porto.judul}</h4>
+                      {porto.deskripsi && (
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.4' }}>
+                          {porto.deskripsi}
+                        </p>
+                      )}
+                      {porto.link_url && (
+                        <a 
+                          href={porto.link_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          style={{ fontSize: '0.75rem', color: 'var(--accent-teal)', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', fontWeight: 500, marginTop: 'auto' }}
+                        >
+                          Lihat Project <ExternalLink size={10} />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Reviews list */}
           <div className="glass-panel" style={{ padding: '24px' }}>
