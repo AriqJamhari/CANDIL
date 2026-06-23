@@ -8,6 +8,12 @@ const jwt = require('jsonwebtoken');
 const db = require('./db');
 require('dotenv').config();
 
+// Run database migrations on startup
+const migrate = require('./migrate');
+migrate()
+  .then(() => console.log('Database schema check/migration complete.'))
+  .catch(err => console.error('Auto-migration failed on server start:', err));
+
 const app = express();
 const server = http.createServer(app);
 

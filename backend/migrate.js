@@ -53,11 +53,16 @@ const migrate = async () => {
     console.log("'portofolio' table verified/created.");
 
     console.log('Database migrations completed successfully!');
-    process.exit(0);
   } catch (err) {
     console.error('Database migration failed:', err);
-    process.exit(1);
+    throw err;
   }
 };
 
-migrate();
+module.exports = migrate;
+
+if (require.main === module) {
+  migrate()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
+}
