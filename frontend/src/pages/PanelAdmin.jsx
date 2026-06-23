@@ -98,6 +98,24 @@ const PanelAdmin = () => {
     }
   };
 
+  const handleToggleJasaStatus = async (id, currentStatus) => {
+    const nextStatus = currentStatus === 'aktif' ? 'nonaktif' : 'aktif';
+    const confirmMsg = nextStatus === 'nonaktif' 
+      ? 'Apakah Anda yakin ingin menonaktifkan/menyembunyikan jasa ini?' 
+      : 'Apakah Anda yakin ingin mengaktifkan kembali jasa ini?';
+      
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      await axiosInstance.patch(`/admin/jasa/${id}/status`, { status: nextStatus });
+      alert(`Status jasa berhasil diubah menjadi ${nextStatus}!`);
+      fetchTabData('jasa');
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Gagal mengubah status jasa.');
+    }
+  };
+
   const handleBroadcastSubmit = async (e) => {
     e.preventDefault();
     if (!broadcastMsg.trim()) return;
@@ -292,6 +310,7 @@ const PanelAdmin = () => {
                       <th style={{ padding: '10px' }}>Kategori</th>
                       <th style={{ padding: '10px' }}>Harga</th>
                       <th style={{ padding: '10px' }}>Status</th>
+                      <th style={{ padding: '10px', textAlign: 'right' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -310,6 +329,20 @@ const PanelAdmin = () => {
                           }}>
                             {j.status}
                           </span>
+                        </td>
+                        <td style={{ padding: '10px', textAlign: 'right' }}>
+                          <button 
+                            onClick={() => handleToggleJasaStatus(j.id, j.status)}
+                            className="btn btn-outline"
+                            style={{ 
+                              padding: '4px 8px', 
+                              fontSize: '0.75rem', 
+                              borderColor: j.status === 'aktif' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(20, 184, 166, 0.4)', 
+                              color: j.status === 'aktif' ? '#fca5a5' : '#5eead4' 
+                            }}
+                          >
+                            {j.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
+                          </button>
                         </td>
                       </tr>
                     ))}

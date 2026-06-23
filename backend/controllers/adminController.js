@@ -72,9 +72,47 @@ const broadcastNotification = async (req, res) => {
   }
 };
 
+const updateJasaStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status || !['aktif', 'nonaktif'].includes(status)) {
+    return res.status(400).json({ message: 'Status tidak valid' });
+  }
+
+  try {
+    const [jasas] = await db.query('SELECT * FROM jasa WHERE id = ?', [id]);
+    if (jasas.length === 0) {
+      return res.status(404).json({ message: 'Jasa tidak ditemukan' });
+    }
+
+    await db.query('UPDATE jasa SET status = ? WHERE id = ?', [status, id]);
+    
+    const jasa = jasas[0];
+    const statusText = status === 'aktif' ? 'diaktifkan kembali' : 'dinonaktifkan oleh admin';
+    const notifMsg = `Layanan jasa Anda "${jasa.judul}" telah ${statusText}.`;
+    
+    await db.query('INSERT INTO notifikasi (user_id, pesan, is_read) VALUES (?, ?, ?)', [
+      jasa.freelancer_id,
+      notifMsg,
+      false
+    ]);
+
+    if (req.io) {
+      req.io.emit(`notification_${jasa.freelancer_id}`, { pesan: notifMsg });
+    }
+
+    res.status(200).json({ message: `Status jasa berhasil diubah menjadi ${status}` });
+  } catch (err) {
+    console.error('Error updating jasa status as admin:', err);
+    res.status(500).json({ message: 'Terjadi kesalahan di server' });
+  }
+};
+
 module.exports = {
   getUsers,
   getJasa,
   getPesanan,
-  broadcastNotification
+  broadcastNotification,
+  updateJasaStatus
 };
